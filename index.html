@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Stoichiometry Calculator</title>
+    <title>Stoichiometry and Fuel Consumption Calculator</title>
 </head>
+
 <body>
-    <h1>Stoichiometry Calculator</h1>
+    <h1>Stoichiometry and Fuel Consumption Calculator</h1>
     <form id="stoichiometryForm">
         <label for="engineVolume">Engine Volume (Liters):</label>
         <input type="number" id="engineVolume" step="0.01" required>
-        
+
         <label for="fuelType">Select Fuel Type:</label>
         <select id="fuelType" required>
             <option value="gasoline">Gasoline</option>
@@ -21,7 +23,10 @@
             <input type="number" id="gasolinePercentage" step="0.01">
         </div>
 
-        <button type="button" onclick="calculateStoichiometry()">Calculate</button>
+        <label for="engineRPM">Engine RPM (Default: 1000 RPM):</label>
+        <input type="number" id="engineRPM" step="1" value="1000">
+
+        <button type="button" onclick="calculateStoichiometryAndFuelConsumption()">Calculate</button>
     </form>
 
     <div id="result" style="display:none;">
@@ -29,15 +34,18 @@
         <p>Optimal Air-Fuel Ratio: <span id="stoichiometry"></span></p>
         <p>Chemical Reaction:</p>
         <pre id="reactionFormula"></pre>
+        <p>Fuel Consumption (L/minute): <span id="fuelConsumption"></span></p>
     </div>
 
     <script>
-        function calculateStoichiometry() {
+        function calculateStoichiometryAndFuelConsumption() {
             const engineVolume = parseFloat(document.getElementById("engineVolume").value);
             const fuelType = document.getElementById("fuelType").value;
+            const engineRPM = parseFloat(document.getElementById("engineRPM").value) || 1000;
 
             let stoichiometry;
             let reactionFormula;
+            let fuelConsumption;
 
             if (fuelType === "gasoline") {
                 stoichiometry = 14.7 / engineVolume;
@@ -46,24 +54,25 @@
                 stoichiometry = 9 / engineVolume;
                 reactionFormula = `C2H5OH + ${(3 * stoichiometry).toFixed(2)}O2 -> ${2 * stoichiometry}CO2 + ${3 * stoichiometry}H2O`;
             } else if (fuelType === "custom") {
-                const gasolinePercentage = parseFloat(document.getElementById("gasolinePercentage").value);
+                const gasolinePercentage = parseFloat(document.getElementById("gasolinePercentage").value) || 0;
                 const ethanolPercentage = 100 - gasolinePercentage;
                 stoichiometry = (14.7 * ethanolPercentage + 9 * gasolinePercentage) / (100 * engineVolume);
-                reactionFormula = `${gasolinePercentage}% C8H18 + ${ethanolPercentage}% C2H5OH + ${(
-                    18 * stoichiometry
-                ).toFixed(2)}O2 -> ${((16 * stoichiometry * gasolinePercentage) / 100).toFixed(2)}CO2 + ${(
+                reactionFormula = `${gasolinePercentage}% C8H18 + ${ethanolPercentage}% C2H5OH + ${(stoichiometry).toFixed(2)}O2 -> ${((16 * stoichiometry * gasolinePercentage) / 100).toFixed(2)}CO2 + ${(
                     (18 * stoichiometry * gasolinePercentage) / 100
                 ).toFixed(2)}H2O + ${((2 * stoichiometry * ethanolPercentage) / 100).toFixed(2)}CO2 + ${(
                     (3 * stoichiometry * ethanolPercentage) / 100
                 ).toFixed(2)}H2O`;
             }
 
+            fuelConsumption = (engineVolume * engineRPM) / (stoichiometry * 2000); // Assuming a 4-stroke engine.
+
             document.getElementById("stoichiometry").textContent = stoichiometry.toFixed(2);
             document.getElementById("reactionFormula").textContent = reactionFormula;
+            document.getElementById("fuelConsumption").textContent = fuelConsumption.toFixed(2);
             document.getElementById("result").style.display = "block";
         }
 
-        document.getElementById("fuelType").addEventListener("change", function() {
+        document.getElementById("fuelType").addEventListener("change", function () {
             if (this.value === "custom") {
                 document.getElementById("customMixture").style.display = "block";
             } else {
@@ -72,4 +81,5 @@
         });
     </script>
 </body>
+
 </html>
