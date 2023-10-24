@@ -1,2 +1,3 @@
-# Combustion-Stoichiometry
-Simple calculator for combustion stoichiometry
+# Stoichiometry Calculator
+
+Simple calculator for combustion reaction.

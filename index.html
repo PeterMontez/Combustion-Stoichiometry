@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stoichiometry Calculator</title>
+</head>
+<body>
+    <h1>Stoichiometry Calculator</h1>
+    <form id="stoichiometryForm">
+        <label for="engineVolume">Engine Volume (Liters):</label>
+        <input type="number" id="engineVolume" step="0.01" required>
+        
+        <label for="fuelType">Select Fuel Type:</label>
+        <select id="fuelType" required>
+            <option value="gasoline">Gasoline</option>
+            <option value="ethanol">Ethanol</option>
+            <option value="custom">Custom Mixture</option>
+        </select>
+
+        <div id="customMixture" style="display:none;">
+            <label for="gasolinePercentage">Gasoline Percentage:</label>
+            <input type="number" id="gasolinePercentage" step="0.01">
+        </div>
+
+        <button type="button" onclick="calculateStoichiometry()">Calculate</button>
+    </form>
+
+    <div id="result" style="display:none;">
+        <h2>Result:</h2>
+        <p>Optimal Air-Fuel Ratio: <span id="stoichiometry"></span></p>
+    </div>
+
+    <script>
+        function calculateStoichiometry() {
+            const engineVolume = parseFloat(document.getElementById("engineVolume").value);
+            const fuelType = document.getElementById("fuelType").value;
+
+            let stoichiometry;
+
+            if (fuelType === "gasoline") {
+                stoichiometry = 14.7 / engineVolume;
+            } else if (fuelType === "ethanol") {
+                stoichiometry = 9 / engineVolume;
+            } else if (fuelType === "custom") {
+                const gasolinePercentage = parseFloat(document.getElementById("gasolinePercentage").value);
+                const ethanolPercentage = 100 - gasolinePercentage;
+                stoichiometry = (14.7 * ethanolPercentage + 9 * gasolinePercentage) / (100 * engineVolume);
+            }
+
+            document.getElementById("stoichiometry").textContent = stoichiometry.toFixed(2);
+            document.getElementById("result").style.display = "block";
+        }
+
+        document.getElementById("fuelType").addEventListener("change", function() {
+            if (this.value === "custom") {
+                document.getElementById("customMixture").style.display = "block";
+            } else {
+                document.getElementById("customMixture").style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
