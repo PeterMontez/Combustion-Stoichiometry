@@ -27,6 +27,8 @@
     <div id="result" style="display:none;">
         <h2>Result:</h2>
         <p>Optimal Air-Fuel Ratio: <span id="stoichiometry"></span></p>
+        <p>Chemical Reaction:</p>
+        <pre id="reactionFormula"></pre>
     </div>
 
     <script>
@@ -35,18 +37,29 @@
             const fuelType = document.getElementById("fuelType").value;
 
             let stoichiometry;
+            let reactionFormula;
 
             if (fuelType === "gasoline") {
                 stoichiometry = 14.7 / engineVolume;
+                reactionFormula = `2C8H18 + ${(18 * stoichiometry).toFixed(2)}O2 -> ${16 * stoichiometry}CO2 + ${18 * stoichiometry}H2O`;
             } else if (fuelType === "ethanol") {
                 stoichiometry = 9 / engineVolume;
+                reactionFormula = `C2H5OH + ${(3 * stoichiometry).toFixed(2)}O2 -> ${2 * stoichiometry}CO2 + ${3 * stoichiometry}H2O`;
             } else if (fuelType === "custom") {
                 const gasolinePercentage = parseFloat(document.getElementById("gasolinePercentage").value);
                 const ethanolPercentage = 100 - gasolinePercentage;
                 stoichiometry = (14.7 * ethanolPercentage + 9 * gasolinePercentage) / (100 * engineVolume);
+                reactionFormula = `${gasolinePercentage}% C8H18 + ${ethanolPercentage}% C2H5OH + ${(
+                    18 * stoichiometry
+                ).toFixed(2)}O2 -> ${((16 * stoichiometry * gasolinePercentage) / 100).toFixed(2)}CO2 + ${(
+                    (18 * stoichiometry * gasolinePercentage) / 100
+                ).toFixed(2)}H2O + ${((2 * stoichiometry * ethanolPercentage) / 100).toFixed(2)}CO2 + ${(
+                    (3 * stoichiometry * ethanolPercentage) / 100
+                ).toFixed(2)}H2O`;
             }
 
             document.getElementById("stoichiometry").textContent = stoichiometry.toFixed(2);
+            document.getElementById("reactionFormula").textContent = reactionFormula;
             document.getElementById("result").style.display = "block";
         }
 
